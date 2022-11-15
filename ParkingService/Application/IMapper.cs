@@ -1,4 +1,4 @@
-﻿using ParkingService.Domain.Models;
+﻿using ParkingService.Domain;
 using ParkingService.ParkingSpotApi.Responses;
 
 namespace ParkingService.Application;
