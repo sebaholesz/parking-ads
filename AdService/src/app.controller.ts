@@ -6,6 +6,12 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiOkResponse,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Response } from 'express';
 import { AppService } from './app.service';
 
@@ -13,7 +19,23 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
+  @ApiTags('ads')
+  @ApiQuery({
+    name: 'count',
+    type: 'number',
+    required: false,
+    description: 'Number of ads returned by the API. Maximum 200.',
+  })
+  @ApiBadRequestResponse({
+    description:
+      "Either bad type or value were provided for the 'count' query parameter.",
+    status: 400,
+  })
+  @ApiOkResponse({
+    description: 'Successful response, ads are returned.',
+    status: 200,
+  })
+  @Get('/ads')
   async getAds(
     @Query('count') count,
     @Res() res: Response,
