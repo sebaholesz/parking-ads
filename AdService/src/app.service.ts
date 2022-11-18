@@ -56,7 +56,9 @@ export class AppService {
       let cachedAds =
         (await this.cacheManager.get<null | string[]>('ads')) ?? [];
 
-      if (cachedAds.length === 200) {
+      if (
+        cachedAds.length === Number.parseInt(process.env.MAXIMUM_STORED_ADS)
+      ) {
         cachedAds = cachedAds.slice(1);
       }
 
