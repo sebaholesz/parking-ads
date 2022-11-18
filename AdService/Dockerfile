@@ -1,20 +1,22 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
-WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+FROM node:18-alpine as development
+RUN npm i -g pnpm
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /src
-COPY ["AdService/AdService.csproj", "AdService/"]
-RUN dotnet restore "AdService/AdService.csproj"
+WORKDIR /usr/src/app
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install
 COPY . .
-WORKDIR "/src/AdService"
-RUN dotnet build "AdService.csproj" -c Release -o /app/build
+RUN pnpm run build
 
-FROM build AS publish
-RUN dotnet publish "AdService.csproj" -c Release -o /app/publish
+FROM node:18-alpine as production
+RUN npm i -g pnpm
 
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "AdService.dll"]
+ENV REDIS_HOST=ad-service-redis
+ENV REDIS_PORT=6380
+ENV BRIANS_AD_SERVICE_URL=http://brians-ad-service/
+
+WORKDIR /usr/src/app
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --prod
+COPY --from=development /usr/src/app/dist ./dist
+
+CMD ["node", "dist/main"]
