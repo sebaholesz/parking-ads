@@ -1,16 +1,36 @@
 version: '3.8'
 
 services:
-  ad-service:
-    image: ${DOCKER_REGISTRY-}ad-service
-    build:
-      context: .
-      dockerfile: AdService/Dockerfile
+  brians-ad-service:
+    container_name: brians-ad-service
+    image: brhv/psuadservice
+    restart: unless-stopped
     ports:
-      - "8000:80"
+      - 8084:80
+
+  ad-service:
+    container_name: ad-service
+    build:
+      context: ./AdService
+      dockerfile: ./Dockerfile
+    ports:
+      - 3000:3000
     depends_on:
-      - postgres
-  
+      - brians-ad-service
+      - ad-service-redis
+    restart: unless-stopped
+
+  ad-service-redis:
+    image: redis:5.0-alpine
+    container_name: ad-service-redis
+    command: --port 6380
+    ports:
+      - 6380:6380
+    expose:
+      - 6380
+    volumes:
+      - ad-service-redis-data:/data
+
   booking-service:
     image: ${DOCKER_REGISTRY-}booking-service
     build:
@@ -64,5 +84,6 @@ services:
       - "1100:8080"
 
 volumes:
+  ad-service-redis-data:
   db:
     driver: local
