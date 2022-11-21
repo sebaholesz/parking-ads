@@ -6,10 +6,9 @@ namespace ParkingService.ParkingSpotApi;
 public interface IParkingSpotApi
 {
     /// <summary>
-    /// Method that returns all free parking spots.
-    /// TODO: Currently only returns parking spots from Aarhus.
+    /// Method that returns all free parking spots from Brian's API. (Who makes a REST API in PHP???)
     /// </summary>
     /// <returns></returns>
-    [Get("/spatialmap?page=get_geojson_opendata&datasource=delebil")]
-    Task<ParkingSpotApiResponse> GetParkingSpotsAsync();
+    [Get("/service.php")]
+    Task<IEnumerable<ParkingSpotResponse>> GetParkingSpotsAsync();
 }

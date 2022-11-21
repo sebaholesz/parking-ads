@@ -17,3 +17,9 @@ services:
     image: 'redislabs/redisinsight:latest'
     ports:
       - '127.0.0.1:8001:8001'
+  
+  parking-service-repository-api:
+    container_name: parking-service-repository-api
+    image: 'brhv/psuparkingservice'
+    ports:
+      - '8083:80'
