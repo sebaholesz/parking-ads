@@ -11,16 +11,11 @@ public class Mapper : IMapper
     {
         return new ParkingSpot
         {
-            Latitude = parkingSpotResponse.Geometry.Coordinates[0],
-            Longitude = parkingSpotResponse.Geometry.Coordinates[1],
-            StreetName = parkingSpotResponse.Properties.StreetName,
-            StreetNumber = parkingSpotResponse.Properties.StreetNumber,
-            Details = parkingSpotResponse.Properties.Details,
-            City = "Aarhus",
-            Country = "Denmark",
-            ZipCode = "8000",
-            Created = DateTime.Parse(parkingSpotResponse.Properties.Created),
-            LastUpdated = DateTime.Parse(parkingSpotResponse.Properties.LastUpdated),
+            Created = DateTime.Parse(parkingSpotResponse.Created),
+            Name = parkingSpotResponse.Name,
+            Coordinates = parkingSpotResponse.Coordinates,
+            Capacity = int.Parse(parkingSpotResponse.Capacity),
+            CurrentlyInUse = int.Parse(parkingSpotResponse.CurrentlyInUse)
         };
     }
 }
