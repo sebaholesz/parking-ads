@@ -31,57 +31,28 @@ services:
     volumes:
       - ad-service-redis-data:/data
 
-  booking-service:
-    image: ${DOCKER_REGISTRY-}booking-service
-    build:
-      context: .
-      dockerfile: BookingService/Dockerfile
-    ports:
-      - "8001:80"
-    depends_on:
-      - postgres
-
-  parking-ads-api:
-    image: ${DOCKER_REGISTRY-}parking-ads-api
-    build:
-      context: .
-      dockerfile: ParkingAdsApi/Dockerfile
-    ports:
-      - "8002:80"
-    depends_on:
-      - postgres
-
-  parking-service:
-    image: ${DOCKER_REGISTRY-}parking-service
-    build:
-      context: .
-      dockerfile: ParkingService/Dockerfile
-    ports:
-      - "8003:80"
-    depends_on:
-      - postgres
-
-  postgres:
-    container_name: parking-ads-postgres
-    image: postgres:14.1-alpine
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    ports:
-      - '5432:5432'
-    volumes:
-      - db:/var/lib/postgresql/data
-
   redis:
-    image: redis:5.0-alpine
-    container_name: parking-ads-redis
-
-  adminer:
-    image: adminer:4.7.6
-    container_name:  parking-ads-adminer
+    container_name: redis
+    image: 'redis:6.0.6'
     ports:
-      - "1100:8080"
+      - '6399:6399/tcp'
+    healthcheck:
+      test: redis-cli ping
+      interval: 3s
+      timeout: 5s
+      retries: 5
+
+  redisinsight:
+    container_name: redisinsight
+    image: 'redislabs/redisinsight:latest'
+    ports:
+      - '8001:8001'
+  
+  parking-service-repository-api:
+    container_name: parking-service-repository-api
+    image: 'brhv/psuparkingservice'
+    ports:
+      - '8083:80'
 
 volumes:
   ad-service-redis-data:
