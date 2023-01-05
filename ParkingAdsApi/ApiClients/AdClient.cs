@@ -55,7 +55,7 @@ namespace ParkingAdsApi.ApiClients.AdClient
         /// <param name="count">Number of ads returned by the API. Maximum 200.</param>
         /// <returns>Successful response, ads are returned.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task GetAdsAsync(double? count)
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetAdsAsync(double? count)
         {
             return GetAdsAsync(count, System.Threading.CancellationToken.None);
         }
@@ -64,7 +64,7 @@ namespace ParkingAdsApi.ApiClients.AdClient
         /// <param name="count">Number of ads returned by the API. Maximum 200.</param>
         /// <returns>Successful response, ads are returned.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task GetAdsAsync(double? count, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetAdsAsync(double? count, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/ads?");
@@ -81,6 +81,7 @@ namespace ParkingAdsApi.ApiClients.AdClient
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
                     request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -105,7 +106,12 @@ namespace ParkingAdsApi.ApiClients.AdClient
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<string>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 400)

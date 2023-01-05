@@ -34,6 +34,12 @@ export class AppController {
   @ApiOkResponse({
     description: 'Successful response, ads are returned.',
     status: 200,
+    schema: {
+      type: 'array',
+      items: {
+        type: 'string'
+      }
+    }
   })
   @Get('/ads')
   async getAds(
