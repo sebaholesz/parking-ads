@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using ParkingAdsApi.ApiClients.AdClient;
 using ParkingAdsApi.ApiClients.ParkingClient;
 using ParkingAdsApi.Models;
+using ParkingAdsApi.Services;
 
 namespace ParkingAdsApi.Controllers;
 
@@ -9,23 +10,20 @@ namespace ParkingAdsApi.Controllers;
 [Route("[controller]")]
 public class ParkingAdsController : Controller
 {
-    private AdClient _adClient;
-    private ParkingClient _parkingClient;
-    
-    public ParkingAdsController(HttpClient httpClient, IConfiguration configuration)
-    {
-        var adServiceUrl = configuration["AdServiceUrl"];
-        var parkingServiceUrl = configuration["ParkingServiceUrl"];
+    private readonly AdService _adService;
+    private readonly ParkingService _parkingService;
 
-        _adClient = new AdClient(adServiceUrl, httpClient);
-        _parkingClient = new ParkingClient(parkingServiceUrl, httpClient);
+    public ParkingAdsController(AdService adService, ParkingService parkingService)
+    {
+        _adService = adService;
+        _parkingService = parkingService;
     }
     
     [HttpGet]
     public async Task<ParkingResponse> Get()
     {
-        var ads = await _adClient.GetAdsAsync(Random.Shared.Next(1, 5));
-        var parkingSpaces = await _parkingClient.ParkingSpotAsync();
+        var ads = await _adService.GetAds(Random.Shared.Next(1, 5));
+        var parkingSpaces = await _parkingService.GetParkingSpots();
         return new ParkingResponse()
         {
             Ads = ads,

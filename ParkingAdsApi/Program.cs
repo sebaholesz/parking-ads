@@ -1,3 +1,5 @@
+using ParkingAdsApi.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,6 +10,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<AdService>();
+builder.Services.AddScoped<ParkingService>();
 
 var app = builder.Build();
 
